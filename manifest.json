@@ -1,0 +1,10 @@
+{
+  "Name": "Extract Hay from Silos",
+  "Author": "cat2002",
+  "Version": "1.0.0",
+  "Description": "Allows you to extract hay from silos.",
+  "UniqueID": "xyz.nekogaming.cat2002.stardewvalley.extracthayfromsilo",
+  "EntryDll": "ExtractHayFromSilo.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": [ "Nexus:???" ]
+}
