@@ -5,58 +5,77 @@ using StardewValley.Buildings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
+using xTile.Dimensions;
 using SObject = StardewValley.Object;
 
 namespace ExtractHayFromSilo
 {
-    [HarmonyPatch(typeof(Building),nameof(Building.doAction))]
+    [HarmonyPatch(typeof(GameLocation),nameof(GameLocation.performAction), new Type[] { typeof(string[]), typeof(Farmer), typeof(Location) })]
     [HarmonyDebug]
-    public static class Building_doAction_Patch
+    public static class GameLocation_performAction_Patch
     {
+        static readonly MethodInfo activeObjectInfo = AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.ActiveObject));
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
+            Type type = AccessTools.Inner(typeof(GameLocation), "<>c__DisplayClass389_0");
             List<CodeInstruction> il = instructions.ToList();
-            bool found = false;
+            bool found1 = false;
+            bool found2 = false;
+            bool found3 = false;
+            Label? label1 = null;
             for (int i = 0; i < il.Count; i++)
             {
-                if (!found && il[i+1].Is(OpCodes.Ldstr, "Strings\\Buildings:PiecesOfHay"))
+                if (!found1 && il[i].Is(OpCodes.Ldstr, "BuildingSilo"))
                 {
-                    Label endLabel = (Label)il[i - 1].operand;
-                    Label label = generator.DefineLabel();
-                    yield return new CodeInstruction(OpCodes.Ldarg_2).WithLabels(il[i].ExtractLabels());
-                    yield return CodeInstruction.Call(typeof(Farmer), AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.ActiveObject)).Name);
-                    yield return new CodeInstruction(OpCodes.Brtrue, label);
-                    yield return new CodeInstruction(OpCodes.Ldarg_2);
-                    yield return CodeInstruction.Call(typeof(Building_doAction_Patch), nameof(GetHandEmpty));
-                    yield return new CodeInstruction(OpCodes.Brfalse, label);
-                    yield return new CodeInstruction(OpCodes.Ldarg_2);
-                    yield return CodeInstruction.Call(typeof(Building_doAction_Patch),nameof(GiveHay));
-                    yield return new CodeInstruction(OpCodes.Br, endLabel);
-                    il[i].WithLabels(label);
-                    found = true;
+                    found1 = true;
+                    label1 = (Label)il[i + 2].operand;
+                }
+                else if (found1 && il[i].labels.Contains(label1.Value))
+                {
+                    found2 = true;
+                }
+                if (found2 && !found3 && il[i-1].Calls(activeObjectInfo))
+                {
+                    Label endLabel = generator.DefineLabel();
+                    yield return new CodeInstruction(OpCodes.Ldloc_0);
+                    yield return CodeInstruction.LoadField(type, "who");
+                    yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.ActiveItem)));
+                    yield return new CodeInstruction(OpCodes.Brtrue, endLabel);
+                    yield return new CodeInstruction(OpCodes.Ldloc_0);
+                    yield return CodeInstruction.LoadField(type, "who");
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return CodeInstruction.Call(typeof(GameLocation_performAction_Patch), nameof(GiveHay));
+                    yield return new CodeInstruction(OpCodes.Brfalse, endLabel);
+                    yield return new CodeInstruction(OpCodes.Pop);
+                    yield return new CodeInstruction(OpCodes.Ldc_I4_1);
+                    yield return new CodeInstruction(OpCodes.Ret);
+                    il[i].labels.Add(endLabel);
+                    found3 = true;
                 }
                 yield return il[i];
             }
-            if (!found)
+            if (!found3)
             {
                 ExtractHayMod.monitor.Log("Could not patch method.", LogLevel.Error);
             }
         }
-        private static bool GetHandEmpty(Farmer farmer)
+        private static bool GiveHay(Farmer farmer, GameLocation location)
         {
-            return farmer.Items[farmer.CurrentToolIndex] == null;
-        }
-        private static void GiveHay(Farmer farmer)
-        {
-            Farm farm = Game1.getLocationFromName("Farm") as Farm;
-            int piecesOfHayToRemove = Math.Min(new SObject(178, 1, false, -1, 0).maximumStackSize(),farm.piecesOfHay.Value);
-            if (piecesOfHayToRemove != 0 && Game1.player.couldInventoryAcceptThisObject(178,piecesOfHayToRemove, 0))
+            int piecesOfHayToRemove = Math.Min(ItemRegistry.Create<SObject>("(O)178").maximumStackSize(),location.piecesOfHay.Value);
+            SObject hayStack = ItemRegistry.Create<SObject>("(O)178", piecesOfHayToRemove);
+            if (piecesOfHayToRemove > 0 && Game1.player.couldInventoryAcceptThisItem(hayStack))
             {
-                farm.piecesOfHay.Value -= piecesOfHayToRemove;
-                farmer.addItemToInventoryBool(new SObject(178, piecesOfHayToRemove, false, -1, 0), false);
-                Game1.playSound("shwip");
+                hayStack = (SObject)farmer.addItemToInventory(hayStack);
+                if (hayStack == null || hayStack.Stack < piecesOfHayToRemove)
+                {
+                    location.piecesOfHay.Value -= piecesOfHayToRemove - (hayStack?.Stack ?? 0);
+                    Game1.playSound("shwip");
+                    return true;
+                }
             }
+            return false;
         }
     }
 }

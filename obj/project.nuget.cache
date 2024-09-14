@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Wf3lpWmlHhQFGlJWRoNLQJ9lo5IFQ8iZbQybm9kBBrryGTwTzyefjnp4372O4vpjr7nEm3SQLyv/K8ieZT3wvA==",
+  "success": true,
+  "projectFilePath": "G:\\Programming\\Modding\\Stardew Valley\\ExtractHayFromSilo\\ExtractHayFromSilo.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Josh\\.nuget\\packages\\pathoschild.stardew.modbuildconfig\\4.2.0\\pathoschild.stardew.modbuildconfig.4.2.0.nupkg.sha512"
+  ],
+  "logs": []
+}

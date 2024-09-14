@@ -1,0 +1,8 @@
+G:\Programming\Modding\Stardew Valley\ExtractHayFromSilo\obj\Debug\net6.0\ExtractHayFromSilo.csproj.AssemblyReference.cache
+G:\Programming\Modding\Stardew Valley\ExtractHayFromSilo\obj\Debug\net6.0\ExtractHayFromSilo.GeneratedMSBuildEditorConfig.editorconfig
+G:\Programming\Modding\Stardew Valley\ExtractHayFromSilo\obj\Debug\net6.0\ExtractHayFromSilo.AssemblyInfoInputs.cache
+G:\Programming\Modding\Stardew Valley\ExtractHayFromSilo\obj\Debug\net6.0\ExtractHayFromSilo.AssemblyInfo.cs
+G:\Programming\Modding\Stardew Valley\ExtractHayFromSilo\obj\Debug\net6.0\ExtractHayFromSilo.csproj.CoreCompileInputs.cache
+G:\Programming\Modding\Stardew Valley\ExtractHayFromSilo\bin\Debug\net6.0\ExtractHayFromSilo.deps.json
+G:\Programming\Modding\Stardew Valley\ExtractHayFromSilo\bin\Debug\net6.0\ExtractHayFromSilo.dll
+G:\Programming\Modding\Stardew Valley\ExtractHayFromSilo\obj\Debug\net6.0\ExtractHayFromSilo.dll
