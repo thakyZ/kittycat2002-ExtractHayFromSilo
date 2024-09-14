@@ -1,5 +1,8 @@
 ﻿using StardewModdingAPI;
 using HarmonyLib;
+using StardewValley;
+using System;
+using xTile.Dimensions;
 
 namespace ExtractHayFromSilo
 {
@@ -11,6 +14,7 @@ namespace ExtractHayFromSilo
             monitor = Monitor;
             Harmony harmony = new("xyz.nekogaming.cat2002.stardewvalley.extracthayfromsilo");
             harmony.PatchAll();
+            Patches patches = Harmony.GetPatchInfo(AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction), new Type[] { typeof(string[]), typeof(Farmer), typeof(Location) }));
         }
     }
 }
